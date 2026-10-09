@@ -1,0 +1,30 @@
+:root {
+  --color-deep: #0F2A44;
+  --color-brand: #1E5C8F;
+  --color-accent: #F07C28;
+  --color-accent-2: #3FC1E0;
+  --color-accent-text: #B8550F;
+  --color-bg: #FFFFFF;
+  --color-bg-alt: #F3F7FA;
+  --color-line: #DCE5ED;
+  --color-ink: #0F2A44;
+  --color-text: #33475B;
+  --color-muted: #5B7085;
+  --color-info: #1D7BB8;
+  --color-success: #177A4B;
+  --color-warning: #E5A50A;
+  --color-error: #B3332E;
+  --font-heading: "Space Grotesk", sans-serif;
+  --font-text: "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+  --radius-field: 8px;
+  --radius-box: 12px;
+  --shadow: 0 1px 2px 0 rgba(15, 42, 68, 0.05), 0 4px 14px 0 rgba(15, 42, 68, 0.05);
+  --shadow-lg: 0 20px 50px 0 rgba(15, 42, 68, 0.16);
+  --gradient-dark: linear-gradient(120deg, #07111C, #13294B);
+  --color-bg-light: #EEF4FA;
+  --color-on-dark-ink: #F2F6FA;
+  --color-on-dark-text: #C5D3E0;
+  --color-on-dark-accent: #FF8A3D;
+  --color-on-dark-link: #7FC4E8;
+}
