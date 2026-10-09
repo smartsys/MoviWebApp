@@ -111,17 +111,21 @@ def add_movie(user_id):
 @app.route('/users/<int:user_id>/movies/<int:movie_id>/update', methods=['POST'])
 def update_movie(user_id, movie_id):
     """Update the title of a movie."""
-    new_title = request.form['title']
-    if not data_manager.update_movie(movie_id, new_title):
+    movie = data_manager.get_movie(movie_id)
+    if movie is None or movie.user_id != user_id:
         abort(404)
+    new_title = request.form['title']
+    data_manager.update_movie(movie_id, new_title)
     return redirect(url_for('get_movies', user_id=user_id))
 
 
 @app.route('/users/<int:user_id>/movies/<int:movie_id>/delete', methods=['POST'])
 def delete_movie(user_id, movie_id):
     """Remove a movie from a user's favorites."""
-    if not data_manager.delete_movie(movie_id):
+    movie = data_manager.get_movie(movie_id)
+    if movie is None or movie.user_id != user_id:
         abort(404)
+    data_manager.delete_movie(movie_id)
     return redirect(url_for('get_movies', user_id=user_id))
 
 

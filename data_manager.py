@@ -29,6 +29,10 @@ class DataManager():
             db.select(Movie).filter_by(user_id=user_id)
         ).scalars().all()
 
+    def get_movie(self, movie_id):
+        """Return a single movie or None if it does not exist."""
+        return db.session.get(Movie, movie_id)
+
     def add_movie(self, movie):
         """Add a new movie to a user's favorites."""
         db.session.add(movie)
