@@ -23,24 +23,6 @@ data_manager = DataManager()
 with app.app_context():
     db.create_all()
 
-    # data_manager.create_user('Test User')
-    #
-    # users = data_manager.get_users()
-    # print('get_users:', [(user.id, user.name) for user in users])
-    # user = users[-1]
-    #
-    # data_manager.add_movie(Movie(name='Twister', year=1996, user_id=user.id))
-    #
-    # movies = data_manager.get_movies(user.id)
-    # print('get_movies:', [(movie.id, movie.name) for movie in movies])
-    # movie = movies[-1]
-    #
-    # data_manager.update_movie(movie.id, 'Twister (Updated)')
-    # print('update_movie:', [(movie.id, movie.name) for movie in data_manager.get_movies(user.id)])
-    #
-    # data_manager.delete_movie(movie.id)
-    # print('delete_movie:', [(movie.id, movie.name) for movie in data_manager.get_movies(user.id)])
-
 
 def fetch_movie_data(title, year):
     """Fetch movie details by title and optional year from OMDb."""

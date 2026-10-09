@@ -1,3 +1,4 @@
+{% from "icons.html" import icon -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,13 +11,23 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="{{ url_for('index') }}">MoviWeb App</a>
+    <header class="site-header">
+        <nav class="site-nav container">
+            <a href="{{ url_for('index') }}" class="logo">{{ icon('movie') }} MoviWeb App</a>
+            <a href="{{ url_for('index') }}" class="nav-link">{{ icon('users') }} Users</a>
         </nav>
     </header>
     <main class="container">
         {% block content %}{% endblock %}
     </main>
+    <script>
+        document.querySelectorAll('form[data-loading]').forEach(function (form) {
+            form.addEventListener('submit', function () {
+                var button = form.querySelector('button[type="submit"]');
+                button.disabled = true;
+                button.classList.add('is-loading');
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,18 +1,34 @@
 {% extends "base.html" %}
+{% from "icons.html" import icon %}
 {% block content %}
-<h1>Users</h1>
-<ul class="user-list">
-    {% for user in users %}
-    <li class="user-entry">
-        <a href="{{ url_for('get_movies', user_id=user.id) }}" class="btn">{{ user.name }}</a>
-    </li>
-    {% endfor %}
-</ul>
+<div class="page-grid">
+    <section>
+        <h1>Users</h1>
+        <p class="lead">Choose your name to see your favorite movies.</p>
+        {% if users %}
+        <ul class="user-list">
+            {% for user in users %}
+            <li class="user-entry">
+                <a href="{{ url_for('get_movies', user_id=user.id) }}" class="btn">
+                    <span class="user-avatar">{{ icon('user') }}</span>
+                    {{ user.name }}
+                    {{ icon('chevron-right') }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty-state">No users yet. Add the first user to get started.</p>
+        {% endif %}
+    </section>
 
-<form action="{{ url_for('create_user') }}" method="post">
-    <label for="name">Name</label>
-    <input type="text" id="name" name="name" required>
-    <button type="submit">Add user</button>
-</form>
-
+    <section class="panel">
+        <h2>Add a user</h2>
+        <form action="{{ url_for('create_user') }}" method="post" class="form-stack">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+            <button type="submit" class="btn btn-primary">{{ icon('user-plus') }} Add user</button>
+        </form>
+    </section>
+</div>
 {% endblock %}

@@ -1,37 +1,65 @@
 {% extends "base.html" %}
+{% from "icons.html" import icon %}
 {% block content %}
-<h1>Movies</h1>
+<a href="{{ url_for('index') }}" class="back-link">{{ icon('arrow-left') }} Back to users</a>
+
+<div class="page-head">
+    <h1>Movies</h1>
+    <p class="count">{{ movies|length }} {{ 'movie' if movies|length == 1 else 'movies' }}</p>
+</div>
+
+<section class="panel panel-add">
+    <h2>Add a movie</h2>
+    <p class="hint">Director, year and poster are looked up on OMDb. If the movie is not found, try again without the year.</p>
+    <form action="{{ url_for('add_movie', user_id=user_id) }}" method="post" class="form-row" data-loading>
+        <div class="field">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        <div class="field">
+            <label for="year">Year</label>
+            <input type="number" id="year" name="year">
+        </div>
+        <button type="submit" class="btn btn-primary">
+            <span class="when-idle">{{ icon('plus') }} Add movie</span>
+            <span class="when-loading">{{ icon('loader') }} Looking up…</span>
+        </button>
+    </form>
+</section>
+
+{% if movies %}
 <ul class="movie-list">
     {% for movie in movies %}
     <li class="movie-entry">
-
         {% if movie.poster_url %}
-        <img src="{{ movie.poster_url }}" alt="Poster of {{ movie.name }}" width="100">
+        <img class="poster" src="{{ movie.poster_url }}" alt="Poster of {{ movie.name }}" width="300" height="450" loading="lazy">
+        {% else %}
+        <div class="poster poster-empty">{{ icon('movie') }}</div>
         {% endif %}
 
-        {{ movie.name }}{% if movie.year %} ({{ movie.year }}){% endif %}
+        <div class="movie-body">
+            <h3 class="movie-title">{{ movie.name }}</h3>
+            {% if movie.year %}<p class="movie-year">{{ movie.year }}</p>{% endif %}
+            {% if movie.director %}<p class="movie-director">{{ movie.director }}</p>{% endif %}
+        </div>
 
-        {% if movie.director %}by {{ movie.director }}{% endif %}
+        <div class="movie-actions">
+            <details class="rename">
+                <summary class="btn btn-secondary btn-small">{{ icon('pencil') }} <span class="rename-label">Rename</span></summary>
+                <form action="{{ url_for('update_movie', user_id=user_id, movie_id=movie.id) }}" method="post" class="rename-form">
+                    <input type="text" name="title" value="{{ movie.name }}" aria-label="New title for {{ movie.name }}" required>
+                    <button type="submit" class="btn btn-secondary btn-icon" aria-label="Save title" title="Save title">{{ icon('check') }}</button>
+                </form>
+            </details>
 
-        <form action="{{ url_for('update_movie', user_id=user_id, movie_id=movie.id) }}" method="post">
-            <input type="text" name="title" value="{{ movie.name }}" aria-label="New title" required>
-            <button type="submit">Update</button>
-        </form>
-
-        <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=movie.id) }}" method="post">
-            <button type="submit">Delete</button>
-        </form>
-
+            <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=movie.id) }}" method="post" class="delete-form">
+                <button type="submit" class="btn btn-danger btn-icon" aria-label="Delete {{ movie.name }}" title="Delete movie">{{ icon('trash') }}</button>
+            </form>
+        </div>
     </li>
     {% endfor %}
 </ul>
-
-<form action="{{ url_for('add_movie', user_id=user_id) }}" method="post">
-    <label for="title">Title</label>
-    <input type="text" id="title" name="title" required>
-    <label for="year">Year</label>
-    <input type="number" id="year" name="year">
-    <button type="submit">Add movie</button>
-</form>
-
+{% else %}
+<p class="empty-state">No movies yet. Add your first favorite above.</p>
+{% endif %}
 {% endblock %}

@@ -1,5 +1,9 @@
 {% extends "base.html" %}
+{% from "icons.html" import icon %}
 {% block content %}
-<h1>Error 500</h1>
-<p>An unexpected error occurred. Please try again later.</p>
+<section class="error-page">
+    <h1>Error 500</h1>
+    <p>An unexpected error occurred. Please try again later.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">{{ icon('arrow-left') }} Back to users</a>
+</section>
 {% endblock %}
