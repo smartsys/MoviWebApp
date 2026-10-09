@@ -42,14 +42,12 @@ def index():
     return render_template('index.html', users=users)
 
 
-@app.route('/users')
-def list_users():
-    """Return all users as a string."""
-    users = data_manager.get_users()
-    for user in users:
-        print(users)
-
-    return str(users)  # Temporarily returning users as a string
+@app.route('/users', methods=['POST'])
+def create_user():
+    """Create a new user and return to the home page."""
+    name = request.form['name']
+    data_manager.create_user(name)
+    return redirect(url_for('index'))
 
 
 @app.route('/users/<int:user_id>/movies')
