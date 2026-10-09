@@ -33,3 +33,13 @@ with app.app_context():
 
     data_manager.delete_movie(movie.id)
     print('delete_movie:', [(movie.id, movie.name) for movie in data_manager.get_movies(user.id)])
+
+
+@app.route('/')
+def home():
+    """Show a welcome message."""
+    return "Welcome to MoviWeb App!"
+
+
+if __name__ == '__main__':
+    app.run()
