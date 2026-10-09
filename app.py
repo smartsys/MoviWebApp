@@ -2,7 +2,7 @@ import os
 
 import requests
 from dotenv import load_dotenv
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, abort, redirect, render_template, request, url_for
 from data_manager import DataManager
 from models import db, Movie
 
@@ -47,8 +47,19 @@ def fetch_movie_data(title, year):
     params = {'apikey': OMDB_API_KEY, 't': title}
     if year:
         params['y'] = year
-    response = requests.get(OMDB_URL, params=params, timeout=10)
-    return response.json()
+    try:
+        response = requests.get(OMDB_URL, params=params, timeout=10)
+        return response.json()
+    except (requests.RequestException, ValueError):
+        return {}
+
+
+def parse_year(value):
+    """Convert a year value to int or return None if it is not a valid year."""
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
 
 
 @app.route('/')
@@ -86,13 +97,13 @@ def add_movie(user_id):
         movie = Movie(
             name=data['Title'],
             director=data['Director'] if data['Director'] != 'N/A' else None,
-            year=int(data['Year'][:4]),
+            year=parse_year(data['Year'][:4]),
             poster_url=data['Poster'] if data['Poster'] != 'N/A' else None,
             user_id=user_id,
         )
     else:
         print("Response NO")
-        movie = Movie(name=title, year=int(year) if year else None, user_id=user_id)
+        movie = Movie(name=title, year=parse_year(year), user_id=user_id)
     data_manager.add_movie(movie)
     return redirect(url_for('get_movies', user_id=user_id))
 
@@ -101,15 +112,29 @@ def add_movie(user_id):
 def update_movie(user_id, movie_id):
     """Update the title of a movie."""
     new_title = request.form['title']
-    data_manager.update_movie(movie_id, new_title)
+    if not data_manager.update_movie(movie_id, new_title):
+        abort(404)
     return redirect(url_for('get_movies', user_id=user_id))
 
 
 @app.route('/users/<int:user_id>/movies/<int:movie_id>/delete', methods=['POST'])
 def delete_movie(user_id, movie_id):
     """Remove a movie from a user's favorites."""
-    data_manager.delete_movie(movie_id)
+    if not data_manager.delete_movie(movie_id):
+        abort(404)
     return redirect(url_for('get_movies', user_id=user_id))
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """Show the page for unknown URLs."""
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    """Show the page for unexpected server errors."""
+    return render_template('500.html'), 500
 
 
 if __name__ == '__main__':
