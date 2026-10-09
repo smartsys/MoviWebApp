@@ -10,6 +10,10 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String, nullable=False)
 
+    def __repr__(self):
+        """Return a readable representation of the user."""
+        return f"User(id={self.id}, name={self.name!r})"
+
 
 class Movie(db.Model):
     """A favorite movie belonging to a user."""
@@ -23,3 +27,7 @@ class Movie(db.Model):
 
     # Link Movie to User
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    def __repr__(self):
+        """Return a readable representation of the movie."""
+        return f"Movie(id={self.id}, name={self.name!r}, year={self.year})"
