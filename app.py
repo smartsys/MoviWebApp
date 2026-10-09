@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, redirect, render_template, request, url_for
 from data_manager import DataManager
 from models import db, Movie
 
@@ -16,7 +16,7 @@ data_manager = DataManager()
 with app.app_context():
     db.create_all()
 
-    data_manager.create_user('Test User')
+    # data_manager.create_user('Test User')
     #
     # users = data_manager.get_users()
     # print('get_users:', [(user.id, user.name) for user in users])
@@ -36,16 +36,37 @@ with app.app_context():
 
 
 @app.route('/')
-def home():
-    """Show a welcome message."""
-    return "Welcome to MoviWeb App!"
+def index():
+    """Show the home page with a list of all users."""
+    users = data_manager.get_users()
+    return render_template('index.html', users=users)
 
 
 @app.route('/users')
 def list_users():
     """Return all users as a string."""
     users = data_manager.get_users()
+    for user in users:
+        print(users)
+
     return str(users)  # Temporarily returning users as a string
+
+
+@app.route('/users/<int:user_id>/movies')
+def get_movies(user_id):
+    """Show a list of a user's favorite movies."""
+    movies = data_manager.get_movies(user_id)
+    return render_template('movies.html', movies=movies, user_id=user_id)
+
+
+@app.route('/users/<int:user_id>/movies', methods=['POST'])
+def add_movie(user_id):
+    """Add a new movie with title and optional year to a user's favorites."""
+    title = request.form['title']
+    year = request.form.get('year')
+    movie = Movie(name=title, year=int(year) if year else None, user_id=user_id)
+    data_manager.add_movie(movie)
+    return redirect(url_for('get_movies', user_id=user_id))
 
 
 if __name__ == '__main__':
