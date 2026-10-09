@@ -3,7 +3,16 @@
 <h1>Movies</h1>
 <ul class="movie-list">
     {% for movie in movies %}
-    <li class="movie-entry">{{ movie.name }}{% if movie.year %} ({{ movie.year }}){% endif %}</li>
+    <li class="movie-entry">
+        {{ movie.name }}{% if movie.year %} ({{ movie.year }}){% endif %}
+        <form action="{{ url_for('update_movie', user_id=user_id, movie_id=movie.id) }}" method="post">
+            <input type="text" name="title" value="{{ movie.name }}" aria-label="New title" required>
+            <button type="submit">Update</button>
+        </form>
+        <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=movie.id) }}" method="post">
+            <button type="submit">Delete</button>
+        </form>
+    </li>
     {% endfor %}
 </ul>
 <form action="{{ url_for('add_movie', user_id=user_id) }}" method="post">

@@ -67,5 +67,20 @@ def add_movie(user_id):
     return redirect(url_for('get_movies', user_id=user_id))
 
 
+@app.route('/users/<int:user_id>/movies/<int:movie_id>/update', methods=['POST'])
+def update_movie(user_id, movie_id):
+    """Update the title of a movie."""
+    new_title = request.form['title']
+    data_manager.update_movie(movie_id, new_title)
+    return redirect(url_for('get_movies', user_id=user_id))
+
+
+@app.route('/users/<int:user_id>/movies/<int:movie_id>/delete', methods=['POST'])
+def delete_movie(user_id, movie_id):
+    """Remove a movie from a user's favorites."""
+    data_manager.delete_movie(movie_id)
+    return redirect(url_for('get_movies', user_id=user_id))
+
+
 if __name__ == '__main__':
     app.run()
