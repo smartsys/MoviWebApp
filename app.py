@@ -1,8 +1,15 @@
 import os
 
+import requests
+from dotenv import load_dotenv
 from flask import Flask, redirect, render_template, request, url_for
 from data_manager import DataManager
 from models import db, Movie
+
+load_dotenv()
+
+OMDB_API_KEY = os.getenv('OMDB_API_KEY')
+OMDB_URL = os.getenv('OMDB_URL')
 
 app = Flask(__name__)
 
@@ -35,6 +42,15 @@ with app.app_context():
     # print('delete_movie:', [(movie.id, movie.name) for movie in data_manager.get_movies(user.id)])
 
 
+def fetch_movie_data(title, year):
+    """Fetch movie details by title and optional year from OMDb."""
+    params = {'apikey': OMDB_API_KEY, 't': title}
+    if year:
+        params['y'] = year
+    response = requests.get(OMDB_URL, params=params, timeout=10)
+    return response.json()
+
+
 @app.route('/')
 def index():
     """Show the home page with a list of all users."""
@@ -59,10 +75,24 @@ def get_movies(user_id):
 
 @app.route('/users/<int:user_id>/movies', methods=['POST'])
 def add_movie(user_id):
-    """Add a new movie with title and optional year to a user's favorites."""
+    """Add a new movie with details from OMDb to a user's favorites."""
+
     title = request.form['title']
     year = request.form.get('year')
-    movie = Movie(name=title, year=int(year) if year else None, user_id=user_id)
+    data = fetch_movie_data(title, year)
+
+    if data.get('Response') == 'True':
+        print("Response", data.get('Response') )
+        movie = Movie(
+            name=data['Title'],
+            director=data['Director'] if data['Director'] != 'N/A' else None,
+            year=int(data['Year'][:4]),
+            poster_url=data['Poster'] if data['Poster'] != 'N/A' else None,
+            user_id=user_id,
+        )
+    else:
+        print("Response NO")
+        movie = Movie(name=title, year=int(year) if year else None, user_id=user_id)
     data_manager.add_movie(movie)
     return redirect(url_for('get_movies', user_id=user_id))
 
